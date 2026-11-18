@@ -8,19 +8,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Pull Kivy Buildozer
+        run: docker pull ghcr.io/kivy/buildozer:latest
+
       - name: Build APK
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          workdir: .
-          buildozer_version: stable
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE":/home/user/hostcwd \
+            ghcr.io/kivy/buildozer:latest \
+            android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KING-REIGNS-WORD-BUILDER-APK
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: bin/*.apk
