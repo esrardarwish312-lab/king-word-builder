@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.buildozer/
+bin/
+*.apk
+*.aab
+backup-*/
+backup-before-*/
+backup-apk-setup/
+app/*.backup*
+app/word_engine.py.before-level-fix
+app/data/*
+!app/data/dictionary_final.json
+!app/data/english_frequency_50k.txt
