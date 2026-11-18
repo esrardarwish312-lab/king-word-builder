@@ -7,7 +7,7 @@ source.include_exts = py,json,txt,kv,ttf
 source.include_patterns = data/dictionary_final.json,data/english_frequency_50k.txt
 source.exclude_dirs = __pycache__
 version = 1.0.0
-requirements = python3,kivy
+requirements = python3,kivy,charset-normalizer==2.1.1
 orientation = portrait
 fullscreen = 0
 android.api = 35
