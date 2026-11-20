@@ -8,6 +8,7 @@ source.include_patterns = data/dictionary_final.json,data/english_frequency_50k.
 source.exclude_dirs = __pycache__
 version = 1.0.0
 requirements = python3,kivy,charset-normalizer==2.1.1
+p4a.branch = develop
 orientation = portrait
 fullscreen = 0
 android.api = 35
