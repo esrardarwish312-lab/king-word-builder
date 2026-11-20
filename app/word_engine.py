@@ -35,13 +35,21 @@ class WordEngine:
             if Counter(word) - available:
                 continue
 
-            rank = self.frequency.get(word, 999999)
+            # Quality filter: exclude acronyms and words missing
+            # from the frequency list.
+            blocked_words = {"it", "nato"}
+            if word.lower() in blocked_words:
+                continue
+
+            rank = self.frequency.get(word.lower())
+            if rank is None or rank > 15000:
+                continue
 
             if level == "Easy" and rank > 5000:
                 continue
-            if level == "Medium" and not 5000 < rank <= 15000:
+            if level == "Medium" and not 5000 < rank <= 10000:
                 continue
-            if level == "Advanced" and rank <= 15000:
+            if level == "Advanced" and not 10000 < rank <= 15000:
                 continue
 
             results.append({
