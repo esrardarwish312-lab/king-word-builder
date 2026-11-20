@@ -2,19 +2,20 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.core.window import Window
 from word_engine import WordEngine
+from collections import defaultdict
 
 Window.clearcolor = (0.04, 0.06, 0.12, 1)
 
 KV = '''
 BoxLayout:
     orientation: 'vertical'
-    padding: 15
-    spacing: 10
+    padding: 10
+    spacing: 8
 
     Label:
         text: '[b]👑 KING REIGNS CYBERY WORD BUILDER[/b]'
         markup: True
-        font_size: '21sp'
+        font_size: '17sp'
         size_hint_y: .12
 
     Spinner:
@@ -52,9 +53,11 @@ BoxLayout:
             text_size: self.width - 20, None
             halign: 'left'
             valign: 'top'
+            font_size: '17sp'
 '''
 
 class KingWordBuilder(App):
+
     def build(self):
         self.title = 'KING REIGNS CYBERY WORD BUILDER'
         self.engine = WordEngine()
@@ -68,25 +71,57 @@ class KingWordBuilder(App):
         results = self.engine.generate(word, level)
 
         if not results:
-            self.root.ids.result.text = 'No matching words found.'
+            messages = {
+                'English': 'No matching words found.',
+                'پښتو': 'مناسب لغتونه پیدا نه شول.',
+                'دری': 'کلمه مناسبی پیدا نشد.'
+            }
+            self.root.ids.result.text = messages.get(
+                language, messages['English']
+            )
             return
 
-        lines = [f'FOUND: {len(results)} WORDS\\n']
+        groups = defaultdict(list)
+        seen = set()
 
         for item in results:
-            name = item["word"]
-            data = item["data"]
+            name = item["word"].upper()
 
-            if language == 'پښتو':
-                meaning = '، '.join(data["ps"])
-            elif language == 'دری':
-                meaning = data["fa"]
-            else:
-                meaning = data["definition"]
+            if name in seen:
+                continue
 
-            lines.append(f'{name} — {meaning}')
+            seen.add(name)
+            groups[len(name)].append(name)
 
-        self.root.ids.result.text = '\\n'.join(lines)
+        headings = {
+            'English': (
+                f'FOUND: {len(seen)} WORDS',
+                lambda n: f'{n} LETTER WORDS'
+            ),
+            'پښتو': (
+                f'ټول موندل شوي لغتونه: {len(seen)}',
+                lambda n: f'{n} توريز لغتونه'
+            ),
+            'دری': (
+                f'تعداد کل لغات: {len(seen)}',
+                lambda n: f'کلمات {n} حرفی'
+            )
+        }
+
+        total, group_title = headings.get(
+            language, headings['English']
+        )
+
+        lines = [total, '']
+
+        for size in sorted(groups):
+            words = sorted(groups[size])
+            lines.append(group_title(size))
+            lines.append(' • '.join(words))
+            lines.append('')
+
+        self.root.ids.result.text = '\n'.join(lines)
+
 
 if __name__ == "__main__":
     KingWordBuilder().run()
